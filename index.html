@@ -5,20 +5,12 @@
     <meta name="viewport" content="width=810, initial-scale=1, maximum-scale=1, user-scalable=no" />
     <title>Co-op Membership & Store Credit Manager</title>
     <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- React & ReactDOM CDN -->
-    <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <!-- Day.js for date handling -->
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.9/dayjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.9/plugin/isSameOrAfter.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.9/plugin/isSameOrBefore.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.9/plugin/customParseFormat.js"></script>
-    <script>
-        dayjs.extend(window.dayjs_plugin_isSameOrAfter);
-        dayjs.extend(window.dayjs_plugin_isSameOrBefore);
-        dayjs.extend(window.dayjs_plugin_customParseFormat);
-    </script>
     <style>
         /* Hide number input arrows */
         input[type=number]::-webkit-inner-spin-button,
@@ -34,11 +26,62 @@
             user-select: none;
             -webkit-user-select: none;
         }
+        .hidden {
+            display: none;
+        }
+        .active-tab {
+            background-color: #2563eb;
+            color: white;
+        }
+        .inactive-tab {
+            background-color: #f3f4f6;
+            color: #1d4ed8;
+        }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
-    <div id="root"></div>
-    <!-- Move React code to separate file -->
-    <script src="app.js" type="module"></script>
+    <div class="max-w-[810px] mx-auto min-h-screen bg-white shadow-lg flex flex-col">
+        <header class="flex-none">
+            <h1 class="text-2xl font-bold text-center py-4 bg-blue-700 text-white tracking-wide">
+                Co-op Membership & Store Credit
+            </h1>
+            <nav class="flex border-b-2 border-gray-200">
+                <button onclick="switchTab('membership')" id="membership-tab"
+                    class="flex-1 tab py-3 text-lg font-semibold active-tab transition">
+                    Membership
+                </button>
+                <button onclick="switchTab('credit')" id="credit-tab"
+                    class="flex-1 tab py-3 text-lg font-semibold inactive-tab transition">
+                    Store Credit
+                </button>
+            </nav>
+        </header>
+        <main class="flex-1 overflow-y-auto p-4">
+            <div id="membership-section">
+                <h2 class="text-xl font-bold mb-2">Membership Management</h2>
+                <!-- Membership form will go here -->
+                <form id="membership-form" class="bg-gray-50 rounded-lg p-4 mb-4 shadow">
+                    <!-- Form fields will be added by JavaScript -->
+                </form>
+                <div id="members-list" class="mt-6">
+                    <!-- Members list will be added by JavaScript -->
+                </div>
+            </div>
+            <div id="credit-section" class="hidden">
+                <h2 class="text-xl font-bold mb-2">Store Credit Management</h2>
+                <!-- Credit form will go here -->
+                <form id="credit-form" class="bg-gray-50 rounded-lg p-4 mb-4 shadow">
+                    <!-- Form fields will be added by JavaScript -->
+                </form>
+                <div id="credits-list" class="mt-6">
+                    <!-- Credits list will be added by JavaScript -->
+                </div>
+            </div>
+        </main>
+        <footer class="text-center text-xs text-gray-400 py-2">
+            © 2025 Co-op Membership System. Data stored locally.
+        </footer>
+    </div>
+    <script src="app.js"></script>
 </body>
 </html> 

@@ -1,11 +1,13 @@
+// Initialize dayjs plugins
+dayjs.extend(window.dayjs_plugin_isSameOrAfter);
+dayjs.extend(window.dayjs_plugin_isSameOrBefore);
+dayjs.extend(window.dayjs_plugin_customParseFormat);
+
 // Constants
 const TODAY = dayjs('2025-05-25');
 const LS_MEMBERS = 'coop_members';
 const LS_CREDITS = 'coop_credits';
 const LS_SPENDING_HISTORY = 'coop_spending_history';
-
-// Create element helper function
-const e = React.createElement;
 
 // Utility Functions
 function generateUniqueKey(existingKeys) {
@@ -36,57 +38,131 @@ function formatDayMonth(date) {
     return dayjs(date).format('DD/MM');
 }
 
-// Local Storage Hook
-function useLocalStorageArray(key, defaultValue) {
-    const [data, setData] = React.useState(() => {
-        try {
-            const stored = localStorage.getItem(key);
-            return stored ? JSON.parse(stored) : defaultValue;
-        } catch {
-            return defaultValue;
-        }
-    });
-    React.useEffect(() => {
-        localStorage.setItem(key, JSON.stringify(data));
-    }, [key, data]);
-    return [data, setData];
+// Tab Switching
+function switchTab(tab) {
+    const membershipTab = document.getElementById('membership-tab');
+    const creditTab = document.getElementById('credit-tab');
+    const membershipSection = document.getElementById('membership-section');
+    const creditSection = document.getElementById('credit-section');
+
+    if (tab === 'membership') {
+        membershipTab.classList.add('active-tab');
+        membershipTab.classList.remove('inactive-tab');
+        creditTab.classList.add('inactive-tab');
+        creditTab.classList.remove('active-tab');
+        membershipSection.classList.remove('hidden');
+        creditSection.classList.add('hidden');
+    } else {
+        creditTab.classList.add('active-tab');
+        creditTab.classList.remove('inactive-tab');
+        membershipTab.classList.add('inactive-tab');
+        membershipTab.classList.remove('active-tab');
+        creditSection.classList.remove('hidden');
+        membershipSection.classList.add('hidden');
+    }
 }
 
-// Main App Component
-function App() {
-    const [tab, setTab] = React.useState('membership');
-    
-    return e('div', { 
-        className: "max-w-[810px] mx-auto min-h-screen bg-white shadow-lg flex flex-col" 
-    }, [
-        e('header', { className: "flex-none" }, [
-            e('h1', { 
-                className: "text-2xl font-bold text-center py-4 bg-blue-700 text-white tracking-wide"
-            }, "Co-op Membership & Store Credit"),
-            e('nav', { className: "flex border-b-2 border-gray-200" }, [
-                e('button', {
-                    className: `flex-1 tab py-3 text-lg font-semibold ${
-                        tab === 'membership' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-blue-700'
-                    } transition`,
-                    onClick: () => setTab('membership')
-                }, "Membership"),
-                e('button', {
-                    className: `flex-1 tab py-3 text-lg font-semibold ${
-                        tab === 'credit' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-blue-700'
-                    } transition`,
-                    onClick: () => setTab('credit')
-                }, "Store Credit")
-            ])
-        ]),
-        e('main', { className: "flex-1 overflow-y-auto p-4" },
-            tab === 'membership' ? e(MembershipSection) : e(StoreCreditSection)
-        ),
-        e('footer', { className: "text-center text-xs text-gray-400 py-2" },
-            "© 2025 Co-op Membership System. Data stored locally."
-        )
-    ]);
+// Local Storage Functions
+function getFromStorage(key, defaultValue = []) {
+    try {
+        const stored = localStorage.getItem(key);
+        return stored ? JSON.parse(stored) : defaultValue;
+    } catch {
+        return defaultValue;
+    }
+}
+
+function saveToStorage(key, data) {
+    localStorage.setItem(key, JSON.stringify(data));
 }
 
 // Initialize the app
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(e(App)); 
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize membership form
+    initMembershipForm();
+    
+    // Initialize credit form
+    initCreditForm();
+    
+    // Load initial data
+    loadMembersList();
+    loadCreditsList();
+});
+
+// Membership Functions
+function initMembershipForm() {
+    const form = document.getElementById('membership-form');
+    form.innerHTML = `
+        <div class="flex flex-wrap gap-4">
+            <div class="flex-1 min-w-[180px]">
+                <label class="block font-semibold mb-1">Name</label>
+                <input type="text" id="member-name" class="w-full px-3 py-2 border rounded-lg text-lg" maxlength="30" required>
+            </div>
+            <div class="flex-1 min-w-[180px]">
+                <label class="block font-semibold mb-1">Phone</label>
+                <input type="text" id="member-phone" class="w-full px-3 py-2 border rounded-lg text-lg" maxlength="8" required>
+            </div>
+            <div class="flex-1 min-w-[180px]">
+                <label class="block font-semibold mb-1">Spending (HKD)</label>
+                <input type="number" id="member-spending" class="w-full px-3 py-2 border rounded-lg text-lg" required>
+            </div>
+        </div>
+        <div class="mt-4">
+            <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg text-lg font-bold">
+                Add Member
+            </button>
+        </div>
+    `;
+    
+    form.addEventListener('submit', handleMemberSubmit);
+}
+
+function handleMemberSubmit(e) {
+    e.preventDefault();
+    // Add member submission logic here
+}
+
+function loadMembersList() {
+    const members = getFromStorage(LS_MEMBERS);
+    const container = document.getElementById('members-list');
+    // Add members list rendering logic here
+}
+
+// Credit Functions
+function initCreditForm() {
+    const form = document.getElementById('credit-form');
+    form.innerHTML = `
+        <div class="flex flex-wrap gap-4">
+            <div class="flex-1 min-w-[180px]">
+                <label class="block font-semibold mb-1">Name</label>
+                <input type="text" id="credit-name" class="w-full px-3 py-2 border rounded-lg text-lg" maxlength="30" required>
+            </div>
+            <div class="flex-1 min-w-[180px]">
+                <label class="block font-semibold mb-1">Phone</label>
+                <input type="text" id="credit-phone" class="w-full px-3 py-2 border rounded-lg text-lg" maxlength="8" required>
+            </div>
+            <div class="flex-1 min-w-[180px]">
+                <label class="block font-semibold mb-1">Amount (HKD)</label>
+                <input type="number" id="credit-amount" class="w-full px-3 py-2 border rounded-lg text-lg" required>
+            </div>
+        </div>
+        <div class="mt-4">
+            <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg text-lg font-bold">
+                Add Store Credit
+            </button>
+        </div>
+    `;
+    
+    form.addEventListener('submit', handleCreditSubmit);
+}
+
+function handleCreditSubmit(e) {
+    e.preventDefault();
+    // Add credit submission logic here
+}
+
+function loadCreditsList() {
+    const credits = getFromStorage(LS_CREDITS);
+    const container = document.getElementById('credits-list');
+    // Add credits list rendering logic here
+} 
